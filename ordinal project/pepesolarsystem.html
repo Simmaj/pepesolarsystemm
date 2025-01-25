@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pepe Solar System</title>
+</head>
+<body>
+  <canvas id="pepeCanvas" width="600" height="600" style="border: 1px solid black;"></canvas>
+
+  <script>
+    const canvas = document.getElementById("pepeCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Create image objects for each Pepe
+    const pepeImages = [];
+    pepeImages[0] = new Image();
+    pepeImages[0].src = "https://ordinals.com/content/7d327d42e8833023b7361dd63903f3b696fd46c2d3bfed3d23a3ed4c0c7fafb8i0"; // Pepe 1
+
+    pepeImages[1] = new Image();
+    pepeImages[1].src = "https://ordinals.com/content/ba698535dc15c8761bf276b8938fc60e118587d25cb92c4104c45ab4ac9a1bcbi0"; // Pepe 2
+
+    pepeImages[2] = new Image();
+    pepeImages[2].src = "https://ordinals.com/content/fcf41c60eee2141a9beaaeb00f237612522fc772c5142177d7cf074ce34a0c06i0"; // Pepe 3
+
+    pepeImages[3] = new Image();
+    pepeImages[3].src = "https://ordinals.com/content/d75753d77a4880a0caed8e3b312789eed36fe8c7762e7fe7c9fef1f5dd392ea7i0"; // Pepe 4
+
+    pepeImages[4] = new Image();
+    pepeImages[4].src = "https://ordinals.com/content/14e6a124364974071aea57e8792cac7cb510e45c9b74aecc764efad7061a17cdi0"; // Pepe 5
+
+    pepeImages[5] = new Image();
+    pepeImages[5].src = "https://ordinals.com/content/bba15295bfd21b969fb4c3b387b8d3e7d19f9e66d7b413dcbf1c39bba97ef35ci0"; // Pepe 6
+
+    pepeImages[6] = new Image();
+    pepeImages[6].src = "https://ordinals.com/content/1f96879be1315c12e9f2f6f059e6eb0f2e342178ecd6afd14a6ef153a03d1197i0"; // Pepe 7
+
+    pepeImages[7] = new Image();
+    pepeImages[7].src = "https://ordinals.com/content/637f2c1e1936467c8e386615e7a3fbec7c86c390c720e8218ac1337d71d9be31i0"; // Pepe 8
+
+    // Define an array for Pepe sizes
+    const pepeSizes = [0.6, 0.8, 1, 1.2, 0.9, 1.3, 1.2, 1.5]; // Different sizes for each Pepe
+
+    // Draw Pepe without any additional effects
+    function drawPepe(x, y, scale = 1, pepeImage) {
+      const pepeWidth = 50 * scale;
+      const pepeHeight = 50 * scale;
+      const radius = pepeWidth / 2;
+
+      // Circular clipping path for a rounded border
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2); // Clipping path
+      ctx.closePath();
+      ctx.clip();
+
+      // Draw the Pepe image
+      ctx.drawImage(pepeImage, x - pepeWidth / 2, y - pepeHeight / 2, pepeWidth, pepeHeight);
+
+      ctx.restore(); // Restore the canvas state
+    }
+
+    // Draw Sun
+    function drawSun(x, y, scale = 1) {
+      ctx.fillStyle = "yellow";
+      ctx.beginPath();
+      ctx.arc(x, y, 60 * scale, 0, 2 * Math.PI); // Sun circle
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    // Animation Loop
+    function animate() {
+      // Clear canvas and set background to black
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill the entire canvas with black
+
+      // Draw Sun at the center
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      drawSun(centerX, centerY, 1);
+
+      // Define the radii for each Pepe's orbit (array of different radii)
+      const orbitRadii = [100, 130, 160, 190, 220, 250, 280, 290]; // Adjusted orbit radii to avoid collisions
+
+      // Define speed factors for each Pepe
+      const speedFactors = [0.35, 0.3, 0.25, 0.4, 0.45, 0.5, 0.3, 0.35]; // Moderate speeds
+
+      // Loop to draw 8 Pepes on different orbits
+      const numberOfPepes = 8;
+      const time = Date.now() / 1000; // Current time in seconds
+
+      // Loop to draw each Pepe at different orbit radius, speed, and size
+      for (let i = 0; i < numberOfPepes; i++) {
+        const angle = (i / numberOfPepes) * 2 * Math.PI + time * speedFactors[i]; // Adjusted speed multiplier
+        const orbitRadius = orbitRadii[i]; // Use different orbit radii for each Pepe
+        const pepeX = centerX + orbitRadius * Math.cos(angle); // X position
+        const pepeY = centerY + orbitRadius * Math.sin(angle); // Y position
+
+        if (pepeImages[i].complete) {
+          const pepeSize = pepeSizes[i]; // Get the size for the current Pepe
+          drawPepe(pepeX, pepeY, pepeSize, pepeImages[i]); // Draw each Pepe with its specific image and size
+        }
+      }
+
+      requestAnimationFrame(animate); // Loop animation
+    }
+
+    // Start the animation after all images load
+    let imagesLoaded = 0;
+    pepeImages.forEach((image) => {
+      image.onload = () => {
+        imagesLoaded++;
+        if (imagesLoaded === pepeImages.length) {
+          animate();
+        }
+      };
+    });
+  </script>
+</body>
+</html>
